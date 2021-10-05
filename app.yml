@@ -1,0 +1,78 @@
+version: '3.7'
+services:
+    safeweb-app:
+        image: safeweb-app
+        restart: always
+        environment:
+            - SPRING_PROFILES_ACTIVE=prod,swagger
+            - SPRING_DATASOURCE_URL=jdbc:mysql://safeweb-mysql:3306/safeweb?useUnicode=true&characterEncoding=utf8&useSSL=false
+            - SAFEWEB_SLEEP=10 # gives time for the database to boot before the application
+            - JAVA_OPTS=-Xmx2048m -Xms512m
+            - SPRING_DATASOURCE_USERNAME=root
+            - SPRING_DATASOURCE_PASSWORD=123+Jvmp=456
+        volumes:
+            - ./safeweb.conf:/var/safeweb/app/safeweb.conf
+            - ./app-logs:/var/safeweb/app/logs/
+            - ./certs:/var/safeweb/certs/
+        ports:
+            - 8080:8080
+            - 8001:8001
+
+    safeweb-mysql:
+        image: mysql:5.7.25
+        restart: always
+        volumes:
+            - type: volume
+              source: mysql-data
+              target: /var/lib/mysql
+        environment:
+            - MYSQL_USER=root
+            - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+            - MYSQL_DATABASE=safeweb
+            - MYSQL_ROOT_PASSWORD=123+Jvmp=456
+        ports:
+            - 3306:3306
+        command: mysqld --lower_case_table_names=1 --skip-ssl --character_set_server=utf8 --explicit_defaults_for_timestamp --sql_mode=""
+#    safeweb-browser:
+#        image: 192.168.50.123:5000/safeweb-browser:safeweb_branch
+#        volumes:
+#            - ./browser-logs:/var/safeweb/logs
+#        ports:
+#            - 8000:8000
+    safeweb-client:
+        image: safeweb-client
+        restart: always
+        volumes:
+            - ./openresty:/var/safeweb/openresty/log/
+            - ./ssl:/var/safeweb/ssl
+        ports:
+            - 443:8443
+            - 80:8080
+
+#    safeweb-wais-admin:
+#        image: 192.168.50.123:5000/wais-admin:master
+#        restart: always
+#        volumes:
+#            - ./upload:/upload/
+#            - ./config/application-prod.yml:/config/application-prod.yml
+#        environment:
+#            - SPRING_PROFILES_ACTIVE=prod
+#            - SPRING_DATASOURCE_URL=jdbc:mysql://safeweb-mysql:3306/safeweb?useUnicode=true&characterEncoding=utf8&useSSL=false
+#            - SPRING_DATASOURCE_USERNAME=root
+#            - SPRING_DATASOURCE_PASSWORD=123+Jvmp=456
+#            #- ATTACK-LOG_DESPATH=/usr/attackLog/
+#            #- ATTACK-LOG_ORGHOSTINFOS=192.168.50.134,22,tengpt,654321,/var/safeweb/openresty/log/
+#        ports:
+#            - 9092:9092
+
+#    safeweb-wais-client:
+#        image: 192.168.50.123:5000/wais-client:master
+#        volumes:
+#            - ./upload:/upload/
+#        restart: always
+#        #environment:
+#        #    - WAIS_SERVER=http://safeweb-wais-admin
+#        ports:
+#            - 9093:9093
+volumes:
+    mysql-data:

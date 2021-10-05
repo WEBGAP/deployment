@@ -1,0 +1,9 @@
+  {
+      "tls": true,
+      "tlscacert": "/var/safeweb/certs/ca.pem",
+      "tlscert": "/var/safeweb/certs/cert.pem",
+      "tlskey": "/var/safeweb/certs/key.pem",
+      "tlsverify": true,
+      "ipv6": true,
+      "fixed-cidr-v6": "2001:db8:1::/64"
+  }
