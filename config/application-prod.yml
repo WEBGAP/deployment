@@ -1,0 +1,87 @@
+spring:
+  profiles: prod
+  application:
+    name: wais-admin
+    profiles:
+      active: dev
+    jackson:
+      date-format: yyyy-MM-dd HH:mm:ss
+      time-zone: GMT+8
+    devtools:
+      restart:
+        enabled: false
+    servlet:
+      multipart:
+        max-file-size: 512KB
+        max-request-size: 512KB
+    freemarker:
+      charset: UTF-8
+      cache: false
+      expose-request-attributes: true
+      request-context-attribute: request
+      expose-session-attributes: true
+      content-type: text/html
+      template-loader-path: classpath:/web/
+      suffix: .ftl
+      check-template-location: true
+  datasource:
+    url: jdbc:mysql://localhost:3306/safeweb?useSSL=false&autoReconnect=true&tinyInt1isBit=false&useUnicode=true&characterEncoding=utf8&allowMultiQueries=true
+    username: root
+    password: 123+Jvmp=456
+
+    driver-class-name: com.mysql.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+    maxActive: 20
+    initialSize: 5
+    maxWait: 60000
+    minIdle: 10
+    maxIdle: 40
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 30000
+    validationQuery: select 1
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: true
+    maxOpenPreparedStatements: 20
+    removeAbandoned: true
+    removeAbandonedTimeout: 1800
+    #logAbandoned: true
+    filters: stat,wall,slf4j
+    #监控链接
+    #http://localhost:9092/wais-admin/druid/login.html
+    useGlobalDataSourceStat: true
+mybatis-plus:
+  mapper-locations: classpath:/mapper/*Mapper.xml
+  typeAliasesPackage: com.xncoding.pos.common.dao.entity
+  global-config:
+    id-type: 0  # 0:数据库ID自增   1:用户输入id  2:全局唯一id(IdWorker)  3:全局唯一ID(uuid)
+    db-column-underline: true  #驼峰下划线转换
+    refresh-mapper: true #刷新mapper 调试神器
+    #逻辑删除配置（下面3个配置）
+    logic-delete-value: 0
+    logic-not-delete-value: 1
+    #自定义sql注入器,不在推荐使用此方式进行配置,请使用自定义bean注入
+    sql-injector: com.baomidou.mybatisplus.mapper.LogicSqlInjector
+    # SQL 解析缓存，开启后多租户 @SqlParser 注解生效
+    sql-parser-cache: true
+  configuration:
+    map-underscore-to-camel-case: true #配置返回数据库(column下划线命名&&返回java实体是驼峰命名)，自动匹配无需as（没开启这个，SQL需要写as： select user_id as userId）
+    cache-enabled: true #配置的缓存的全局开关
+    lazyLoadingEnabled: true #延时加载的开关
+    multipleResultSetsEnabled: true #开启的话，延时加载一个属性时会加载该对象全部属性，否则按需加载属性
+logging:
+  level:
+    ROOT: INFO
+    com:
+      tistar:
+        wais:
+          admin：DEBUG
+  #file: E:/logs/wais-admin.log
+
+
+# 攻击日志配置信息
+attack-log:
+  desPath: /usr/attackLog/
+  orgHostInfos:
+    - 127.0.0.1,22,root,123456,/var/safeweb/openresty/log/
